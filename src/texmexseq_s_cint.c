@@ -143,7 +143,7 @@ double my_f2 (double z, int n1, int n2, double mu1, double mu2, double sig1, dou
 {
   // slices in the bipoilog integral
   // the slices are over log(lambda1), so each slice has an integral over log(lambda2) inside it
-  return poilog_singleton(n2, mu2+rho*sig2/sig1*(z-mu1), pow(sig2, 2)*(1-pow(rho, 2))) * exp(n1*z - exp(z) - fac - 0.5*pow((z-mu1)/sig1, 2));
+  return poilog_singleton(n2, mu2+rho*sig2/sig1*(z-mu1), sig2*sqrt(1-pow(rho, 2))) * exp(n1*z - exp(z) - fac - 0.5*pow((z-mu1)/sig1, 2));
 }
 
 void my_f_vec (double *z, int n_slices, void *p)
@@ -267,7 +267,7 @@ double bipoilog_singleton (int n1, int n2, double mu1, double mu2, double sig1, 
     error(message);
   }
 
-  val = result/(sig1*sqrt(2*M_PI));
+  val = result/(sqrt(2*M_PI)*sig1);
   Free(iwork);
   Free(work);
 
