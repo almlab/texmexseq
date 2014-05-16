@@ -1,0 +1,2 @@
+useDynLib(texmexseq)
+export(.dpoilog,dpoilog2,dbipoilog2,rpoilog2,rbipoilog2,bipoilogMLE2,poilogMLE2)

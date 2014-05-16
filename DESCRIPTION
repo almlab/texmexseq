@@ -1,0 +1,10 @@
+Package: texmexseq
+Type: Package
+Title: Treatment Effect eXplorer for Microbial Ecology eXperiments (using sequence counts)
+Version: 0.1
+Date: 2014-05-19
+Author: Scott Olesen
+Maintainer: Scott Olesen <swo@mit.edu>
+Description: functions for ...
+License: GPL-3
+Encoding: latin1
