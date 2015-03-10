@@ -39,7 +39,7 @@ are also mode top-down when using the higher-level \code{Experiment} command.
 
 \examples{
 # create some data
-random.sample <- function() Sample(rpoilog(S=1000, mu=-2.0, sig=2.0))
+random.sample <- function() Sample(rpoilog(S=1000, mu=-2.0, sig=2.0, condS=T))
 
 ct.before <- random.sample()
 ct.after <- random.sample()
@@ -58,6 +58,7 @@ q <- SampleQuad(ct, tx)
 
 # visualize the changes in rescaled read counts
 plot(q)
+}
 
 \author{Scott Olesen \email{swo@mit.edu}}
 
