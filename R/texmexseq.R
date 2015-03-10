@@ -1,4 +1,4 @@
-dpoilog2 <- function(n, mu, sig, trunc=-1) {
+dpoilog <- function(n, mu, sig, trunc=-1) {
   if (length(mu)>1 | length(sig)>1) stop('vectorization of mu and sig is not supported') 
   if (any((n[n!=0]/trunc(n[n!=0]))!=1)) stop('all n must be integers')
   if (any(n<=trunc)) stop('all n must be above truncation limit')
@@ -21,7 +21,7 @@ dpoilog2 <- function(n, mu, sig, trunc=-1) {
   .C('poilog', as.integer(n), as.double(mu), as.double(sig), n_obs=as.integer(length(n)), val=double(length(n)))$val
 }
 
-dbipoilog2 <- function(n1, n2, mu1, mu2, sig1, sig2, rho, trunc=-1){ 
+dbipoilog <- function(n1, n2, mu1, mu2, sig1, sig2, rho, trunc=-1){ 
   if (length(n1)!=length(n2)) stop('n1 and n2 have unequal length')
   if (any((n1[n1!=0]/trunc(n1[n1!=0]))!=1)) stop('all values of n1 must be integers')
   if (any((n2[n2!=0]/trunc(n2[n2!=0]))!=1)) stop('all values of n2 must be integers')
@@ -52,7 +52,7 @@ dbipoilog2 <- function(n1, n2, mu1, mu2, sig1, sig2, rho, trunc=-1){
     val=double(length(n1)))$val
 }
 
-rbipoilog2 <- function(S,mu1,mu2,sig1,sig2,rho,nu1=1,nu2=1,condS=FALSE,keep0=FALSE){
+rbipoilog <- function(S,mu1,mu2,sig1,sig2,rho,nu1=1,nu2=1,condS=FALSE,keep0=FALSE){
    sim <- function(nr){
      lamx <- rnorm(nr)
      lamy <- rho*lamx+sqrt(1-rho^2)*rnorm(nr)
@@ -94,8 +94,7 @@ rbipoilog2 <- function(S,mu1,mu2,sig1,sig2,rho,nu1=1,nu2=1,condS=FALSE,keep0=FAL
    return(simMat)
 }
 
-   
-rpoilog2 <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
+rpoilog <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
    sim <- function(nr){
      lamx <- rnorm(nr)
      x <- rpois(nr,exp(sig*lamx+mu+log(nu)))
@@ -127,27 +126,29 @@ rpoilog2 <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
    return(simVec)
 }
 
-poilogMLE2 <- function(n,startVals=c(mu=1,sig=2),nboot=0,zTrunc=TRUE,
-                     method='BFGS',control=list(maxit=1000)){
-  
+poilogMLE <- function(n, nboot=0, trunc=-1, method='BFGS', control=list(maxit=1000)) {
   if (is.matrix(n) | (is.data.frame(n))) stop(paste('n has',ncol(n),'colums, supply a vector or use function bipoilogMLE',sep=' ')) 
-  if (length(startVals)!=2) stop('length of startVals is not 2') 
-  if (startVals[2]<=0) stop('start value of sig2 is not larger than 0')
-  startVals[2] <- log(startVals[2])
-  un <- unique(n)
+  
+  print("working\n")
+  
+  # truncate the input
+  nt <- n[n > trunc]
+  
+  # guess the starting values from the distribution
+  startVals=c(mu=mean(log(nt)), log_sig=log(var(log(nt))))
+  
+  # dereplicate
+  un <- unique(nt)
   nr <- rep(NA,length(un))
   for (i in 1:length(un)){ nr[i] <- sum(n%in%un[i]) }
   
-  lnL <- function(z,nr){
-    if (z[2] < (-372)) z[2] <- -372
-    if (z[2] >    354) z[2] <-  354
-    b <- 0
-    if (zTrunc) b <- log(1-dpoilog(0,z[1],exp(z[2])))
-    logL <- -sum((log(dpoilog(un,z[1],exp(z[2])))-b)*nr)
+  lnL <- function(z, nr) {
+    if (TRUE) { stop (sprintf("z=%f %f\n", z[1], z[2])) }
+    logL <- -sum((log(dpoilog(un, z[1], exp(z[2]), trunc=trunc)))*nr)
     return(logL)
   }
   
-  fit <- optim(startVals,lnL,nr=nr,control=control,method=method)
+  fit <- optim(startVals, lnL, nr=nr, control=control, method=method)
   
   if (fit$convergence!=0){
     if (fit$convergence==1) stop('the iteration limit has been reached!   try different startVals or increase maxit') 
@@ -186,7 +187,7 @@ poilogMLE2 <- function(n,startVals=c(mu=1,sig=2),nboot=0,zTrunc=TRUE,
   return(est)   
 }
 
-bipoilogMLE2 <- function(n1,n2=NULL,startVals=c(mu1=1,mu2=1,sig1=2,sig2=2,rho=0.5),
+bipoilogMLE <- function(n1,n2=NULL,startVals=c(mu1=1,mu2=1,sig1=2,sig2=2,rho=0.5),
                        nboot=0,zTrunc=TRUE,file=NULL,
                        method='BFGS',control=list(maxit=1000)){
   
@@ -276,3 +277,5 @@ bipoilogMLE2 <- function(n1,n2=NULL,startVals=c(mu1=1,mu2=1,sig1=2,sig2=2,rho=0.
   
   return(est)   
 }
+
+dyn.load('texmexseq_s_cint.so')

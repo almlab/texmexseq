@@ -300,3 +300,58 @@ void bipoilog (int *n1, int *n2, double *mu1, double *mu2, double *sig1, double 
     R_CheckUserInterrupt();
   }
 }
+
+
+// -- cep functions --
+void cep(int *n1, int *n2, double *mu1, double *mu2, double *sig1, double *sig2, double *rho, int *trunc, int *n2_max, double *fold, int *n2_limit, double *numerator, double *denominator)
+{
+  /* compute ceps
+   *
+   * n1 : a single integer
+   * n2 : an array of sorted n2 values
+   * n2_max: last value in n2
+   * fold: stop the denominator when the pdf falls to e^-fold of its maximum value
+   * n2_limit: throw an error after going out this far in the denominator sum
+   *
+   * numerator: same length as n2, the numerator values
+   * denominator: single float, the value of the common denominator
+   * 
+   */
+  
+  double cumprob=0; // cumulative probability
+  double prob=0;
+  double maxprob=0; // biggest probability we've encountered so far
+  int x=0; // counter for the sum
+  int n2j=0; // position of the next n2 value where cumprob will be dumped
+  char message[80];
+  
+  // for every n2, accumulate its probability
+  for(x = *trunc+1; x<=*n2_max; x++) {
+    prob = bipoilog_singleton(*n1, x, *mu1, *mu2, *sig1, *sig2, *rho);
+    maxprob = (prob > maxprob ? prob : maxprob);
+    cumprob += prob;
+    
+    if (x == n2[n2j]) {
+      // we have summed up to the next value of n2
+      val[n2j] = cumprob;
+      n2j++;
+    }
+  }
+  
+  // compute the denominator
+  while (log(maxprob) - log(prob) > -fold) {
+    x++;
+    
+    if (x > *n2_limit) {
+      sprintf(message, "cep denominator exceeded limit %d\n", *n2_limit);
+      error(message);
+    }
+    
+    prob = bipoilog_singleton(*n1, x, *mu1, *mu2, *sig1, *sig2, *rho);
+    maxprob = (prob > maxprob ? prob : maxprob);
+    cumprob += prob;
+  }
+  
+  // output the denominator
+  *denominator = cumprob;
+}
