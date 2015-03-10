@@ -1,2 +1,2 @@
 useDynLib(texmexseq)
-export(dpoilog,rpoilog,poilogMLE,Sample,SampleFit,SamplePair,SampleQuad,ReadOtuTable,ReadSampleTable,ReadQuadTable,Experiment)
+export(dpoilog,rpoilog,poilogMLE,Sample,SampleFit,SamplePair,SampleQuad,ReadOtuTable,Experiment)
