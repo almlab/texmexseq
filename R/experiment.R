@@ -1,9 +1,9 @@
 ReadOtuTable <- function(fn) read.table(fn, header=T, row.names=1, check.names=F)
 
-ReadSampleTable <- function(fn) {
-  # read a samples table. headers are: 'name', 'before', 'after', 'treatment'
+ReadPairTable <- function(fn) {
+  # read a samples table. headers are: 'name', 'before', 'after'
   # before and after are the labels of the relevant columns in the otu table
-  read.table(fn, header=T, colClasses=c("character", "character", "character", "factor"))
+  read.table(fn, header=T, colClasses=c("character", "character", "character"))
 }
 
 ReadQuadTable <- function(fn) {
@@ -12,23 +12,23 @@ ReadQuadTable <- function(fn) {
   read.table(fn, header=T, colClasses=c("character", "character", "character"))
 }
 
-Experiment <- function(otu.table, sample.table, quad.table) {
-  # read in the sample, quad, and otu tables. make the samples and fit them.
+Experiment <- function(otu.table, pair.table, quad.table) {
+  # read in the pair, quad, and otu tables. make the samples and fit them.
 
   # read in the tables if filenames are given
-  if (class(sample.table) == "character") sample.table <- ReadSampleTable(sample.table)
+  if (class(pair.table) == "character") pair.table <- ReadSampleTable(pair.table)
   if (class(quad.table) == "character") quad.table <- ReadQuadTable(quad.table)
 
   # check that the pairs in the quad table are all in the pairs table
-  check.sample <- function(name) {
-    if (!(name %in% sample.table$name)) {
+  check.pair <- function(name) {
+    if (!(name %in% pair.table$name)) {
       stop(sprintf("the pair named '%s' is in the quads list but not the pairs list", name))
     }
   }
   for (i in 1:nrow(quad.table)) {
     row <- quad.table[i,]
-    check.sample(row$control)
-    check.sample(row$treatment)
+    check.pair(row$control)
+    check.pair(row$treatment)
   }
 
   # read in the otu table
@@ -37,19 +37,19 @@ Experiment <- function(otu.table, sample.table, quad.table) {
   # check that all the pair names are in the otu table
   check <- function(name) {
     if (!(name %in% names(otu.table))) {
-      stop(sprintf("the sample '%s' was in the pairs file but not the otu table"))
+      stop(sprintf("the pair '%s' was in the pairs file but not the otu table"))
     }
   }
-  for (i in 1:nrow(sample.table)) {
-    row <- sample.table[i,]
+  for (i in 1:nrow(pair.table)) {
+    row <- pair.table[i,]
     check(row$before)
     check(row$after)
   }
 
   # create a pairs list
   pairs <- list()
-  for (i in 1:nrow(sample.table)) {
-    row <- sample.table[i,]
+  for (i in 1:nrow(pair.table)) {
+    row <- pair.table[i,]
     before <- Sample(otu.table[[row$before]], row$before)
     after <- Sample(otu.table[[row$after]], row$after)
     p <- SamplePair(before, after, row$name)
