@@ -6,8 +6,8 @@
 }
 
 \usage{
-    poilogMLE(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0) {
-  control=list(maxit=1000, fnscale=length(n), parscale=c(1.0, 1.0))
+  poilogMLE(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
+  control=list(maxit=1000, fnscale=length(n), parscale=c(1.0, 1.0)))
 }
 
 \arguments{
@@ -38,6 +38,7 @@ the environment or if it is present but in low abundance.
 
 Parametric bootstrapping simulate new sets of observations using the estimated
 parameters (see \code{rbipoilog}).
+}
 
 \value{
     \item{par}{Maximum likelihood estimates of the parameters}
@@ -46,7 +47,7 @@ parameters (see \code{rbipoilog}).
     \item{gof}{Godness of fit measure obtained by checking the rank of
         \code{logLval} against \code{logLval}’s obtained during the bootstrap
         procedure, (gof<0.05) or (gof>0.95) indicates lack of fit}
-    \item{boot}{A data frame containing the bootstrap replicates of parameters and \code{logLval}
+    \item{boot}{A data frame containing the bootstrap replicates of parameters and \code{logLval}}
 }
 
 \seealso{

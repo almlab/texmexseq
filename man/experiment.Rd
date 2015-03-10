@@ -14,7 +14,7 @@
 
 \arguments{
   \item{otu.table}{a filename or a dataframe (as produced by \code{ReadOtuTable})}
-  \item{sample.table,quad.table}{a filename, as described below}
+  \item{pair.table,quad.table}{a filename, as described below}
 }
 
 \details{
