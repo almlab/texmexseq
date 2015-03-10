@@ -1,2 +1,2 @@
-load-from-tables.R
-build-from-vectors.R
+load-from-tables	load samples, pairs, and quads all at once
+build-from-vectors	build up samples, pairs, and quads from vectors
