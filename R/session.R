@@ -11,41 +11,40 @@ plot.texmex.sample <- function(s) {
   hist(s$n, main=s$name, xlab='counts')
 }
 
-SampleFit <- function(s, trunc=TRUE, verbose=TRUE, ...) {
+SampleFit <- function(sample, trunc=TRUE, verbose=TRUE, ...) {
   # fit the observation to a poilog
   if (verbose) {
-    message <- sprintf("fitting sample %s", s$name)
-    if (trunc) message <- paste(message, "with truncation", sep=" ")
+    message <- sprintf("fitting sample %s%s", ifelse(is.null(sample$name), "", sample$name), ifelse(trunc, " with truncation", ""))
     print(message)
   }
-  res <- poilogMLE(s$n, trunc=trunc, ...)
+  res <- poilogMLE(sample$n, trunc=trunc, ...)
   
   # compute the empirical pdf and cdf in a table
   # tabulate n+1 so that the resulting vector has abundance of counts=0 in the first slot
   if (trunc) {
-    epdf.table <- tabulate(s$n[s$n > 0] + 1)
+    epdf.table <- tabulate(sample$n[sample$n > 0] + 1)
   } else {
-    epdf.table <- tabulate(s$n + 1)
+    epdf.table <- tabulate(sample$n + 1)
   }
   epdf.values <- epdf.table / sum(epdf.table)
   ecdf.values <- cumsum(epdf.values)
   
   # compute the theoretical pdf and cdf using the poilog fit
   # start at 0 b/c that's where tabulate n+1 starts
-  tpdf.values <- dpoilog(0:max(s$n), res$par['mu'], res$par['sig'], trunc=trunc)
+  tpdf.values <- dpoilog(0:max(sample$n), res$par['mu'], res$par['sig'], trunc=trunc)
   F.values <- cumsum(tpdf.values)
 
   # look up the pdf and cdf for every OTU
   # n=0 means 1st entry in tcdf; n=1 means 2nd, etc.
-  tpdf <- tpdf.values[s$n + 1]
-  F <- F.values[s$n + 1]
+  tpdf <- tpdf.values[sample$n + 1]
+  F <- F.values[sample$n + 1]
   
   # compute rescaled reads
-  z <- (log(s$n) - res$par['mu']) / res$par['sig']
+  z <- (log(sample$n) - res$par['mu']) / res$par['sig']
   
   # assign and output
   fit <- list(rest=res, epdf.values=epdf.values, ecdf.values=ecdf.values, tpdf.values=tpdf.values, F.values=F.values,
-    tpdf=tpdf, F=F, z=z, name=s$name)
+    tpdf=tpdf, F=F, z=z, name=sample$name)
   class(fit) <- "texmex.fit"
   fit
 }
