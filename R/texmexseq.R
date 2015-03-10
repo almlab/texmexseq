@@ -20,7 +20,7 @@ dpoilog <- function(n, mu, sig, trunc=FALSE) {
      n_obs=as.integer(length(n)), val=double(length(n)))$val
 }
 
-rpoilog <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
+rpoilog <- function(S, mu, sig, nu=1, condS=FALSE, keep0=FALSE){
    sim <- function(nr){
      lamx <- rnorm(nr)
      x <- rpois(nr,exp(sig*lamx+mu+log(nu)))
@@ -32,18 +32,18 @@ rpoilog <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
    if (!is.finite(S)) stop('S is not finite')
    if ((S/trunc(S))!=1) stop('S is not an integer')
    if (sig<0) stop('sig is not positive')
-   if (nu<0)    stop('nu is not positive')
+   if (nu<0) stop('nu is not positive')
    
-   if (condS){
+   if (condS) {
      simVec <- vector('numeric',0)
      fac <- 2
      nr  <- S
      while (length(simVec)<S){
        simvals <- sim(nr*fac)
-       simVec  <- c(simVec,simvals)
-       fac     <- (1/(length(simvals)/(nr*fac)))*2
-       fac     <- ifelse(is.finite(fac),fac,1000)
-       nr      <- S-length(simvals)
+       simVec <- c(simVec,simvals)
+       fac <- (1/(length(simvals)/(nr*fac)))*2
+       fac <- ifelse(is.finite(fac),fac,1000)
+       nr <- S-length(simvals)
      }
      simVec <- simVec[1:S]
    }

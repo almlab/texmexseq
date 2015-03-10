@@ -7,6 +7,10 @@ Sample <- function(n, name=NULL) {
   s
 }
 
+plot.texmex.sample <- function(s) {
+  hist(s$n, main=s$name, xlab='counts')
+}
+
 SampleFit <- function(s, trunc=TRUE, verbose=TRUE, ...) {
   # fit the observation to a poilog
   if (verbose) {
@@ -130,7 +134,7 @@ plot.texmex.pair <- function(pair, log='xy', fit=TRUE, highlight=NULL) {
   if (fit) abline(m, lty='dashed')
 }
 
-SampleQuad <- function(control, treatment, name="") {
+SampleQuad <- function(control, treatment, name=NULL) {
   # check input classes
   if (class(control) != "texmex.pair" || class(treatment) != "texmex.pair") {
     stop(sprintf("input to SampleQuad must be SamplePair objects; instead got %s and %s", class(control), class(treatment)))
