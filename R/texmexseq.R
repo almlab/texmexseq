@@ -1,97 +1,23 @@
-dpoilog <- function(n, mu, sig, trunc=-1) {
+dyn.load('texmexseq_s_cint.so')
+
+dpoilog <- function(n, mu, sig, trunc=FALSE) {
   if (length(mu)>1 | length(sig)>1) stop('vectorization of mu and sig is not supported') 
   if (any((n[n!=0]/trunc(n[n!=0]))!=1)) stop('all n must be integers')
-  if (any(n<=trunc)) stop('all n must be above truncation limit')
   if (!all(is.finite(c(mu,sig)))) stop('all parameters should be finite')
   if (sig<=0) stop('sig is not larger than 0')
-  if (trunc < -1) stop('truncation limit should be no lower than -1')
-  if (any(n<=trunc)) stop('all n must be above the truncation limit')
+  if (trunc & all(n == 0)) warning('all n will be truncated')
   
   pdfs <- .dpoilog(n, mu, sig)
-  if (trunc == -1) {
-    denom = 1.0
-  } else {
-    denom = 1.0 - sum(.dpoilog(0:trunc, mu, sig))
+  if (trunc) {
+    pdfs <- pdfs / (1.0 - .dpoilog(0, mu, sig))
+    pdfs[n == 0] <- 0.0
   }
-  
-  pdfs/denom
+  pdfs
 }
 
 .dpoilog <- function(n, mu, sig) {
-  .C('poilog', as.integer(n), as.double(mu), as.double(sig), n_obs=as.integer(length(n)), val=double(length(n)))$val
-}
-
-dbipoilog <- function(n1, n2, mu1, mu2, sig1, sig2, rho, trunc=-1){ 
-  if (length(n1)!=length(n2)) stop('n1 and n2 have unequal length')
-  if (any((n1[n1!=0]/trunc(n1[n1!=0]))!=1)) stop('all values of n1 must be integers')
-  if (any((n2[n2!=0]/trunc(n2[n2!=0]))!=1)) stop('all values of n2 must be integers')
-  if (any(n1<=trunc)) stop('all n1 must be above truncation limit')
-  if (any(n2<=trunc)) stop('all n2 must be above truncation limit')
-  
-  if (length(c(mu1,mu2,sig1,sig2,rho))>5) stop('vectorization of mu, sig, rho is not supported')
-  if (!all(is.finite(c(mu1,mu2,sig1,sig2,rho)))) stop('all parameters should be finite')
-  if (-1>rho | rho>1) stop('rho must be in the range -1 to 1')
-  if (sig1<=0 | sig2<=0) stop('sig1 or sig2 is not larger than 0')
-  
-  pdfs <- .dbipoilog(n1, n2, mu1, mu2, sig1, sig2, rho)
-  denom = 1.0
-  if (trunc != -1) {
-    for (i in 0:trunc) {
-      for (j in 0:trunc) {
-        denom = denom - .dpoilog(i, j, mu1, mu2, sig1, sig2, rho)
-      }
-    }  
-  }
-  
-  pdfs/denom
-}
-  
-.dbipoilog <- function(n1, n2, mu1, mu2, sig1, sig2, rho) {
- .C('bipoilog', n1=as.integer(n1), n2=as.integer(n2), mu1=as.double(mu1), mu2=as.double(mu2),
-    sig1=as.double(sig1), sig2=as.double(sig2), rho=as.double(rho), n_obs=as.integer(length(n1)),
-    val=double(length(n1)))$val
-}
-
-rbipoilog <- function(S,mu1,mu2,sig1,sig2,rho,nu1=1,nu2=1,condS=FALSE,keep0=FALSE){
-   sim <- function(nr){
-     lamx <- rnorm(nr)
-     lamy <- rho*lamx+sqrt(1-rho^2)*rnorm(nr)
-     x <- rpois(nr,exp(sig1*lamx+mu1+log(nu1)))
-     y <- rpois(nr,exp(sig2*lamy+mu2+log(nu2)))
-     sel <- x+y 
-     xy <- cbind(x,y)
-     if (keep0) xy <- cbind(x,y) else xy <- cbind(x[sel>0],y[sel>0])
-     return(xy)
-   }
-  
-   
-   if (S<1) stop('S is not positive')
-   if (!is.finite(S)) stop('S is not finite')
-   if ((S/trunc(S))!=1) stop('S is not an integer')
-   if (sig1<0) stop('sig1 is not positive')
-   if (sig2<0) stop('sig2 is not positive')
-   if (nu1<0)    stop('nu1 is not positive')
-   if (nu2<0)    stop('nu2 is not positive')
-   if (-1>rho | rho>1) stop('rho must be in the range -1 to 1')
-   if (!is.logical(keep0)) stop('keep0 should be TRUE or FALSE')
-   if (length(c(mu1,mu2,sig1,sig2,rho,nu1,nu2))>7) stop('duplicate values of some parameters')
-   
-   if (condS){
-     simMat <- matrix(NA,0,2)
-     fac <- 2
-     nr  <- S
-     while (nrow(simMat)<S){
-       simvals <- sim(nr*fac)
-       simMat  <- rbind(simMat,simvals)
-       fac     <- (1/(nrow(simvals)/(nr*fac)))*2
-       fac     <- ifelse(is.finite(fac),fac,1000)
-       nr      <- S-nrow(simvals)
-     }
-     simMat <- simMat[1:S,]
-   }
-   
-   else simMat <- sim(S)
-   return(simMat)
+  .C('poilog', as.integer(n), as.double(mu), as.double(sig),
+     n_obs=as.integer(length(n)), val=double(length(n)))$val
 }
 
 rpoilog <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
@@ -126,29 +52,29 @@ rpoilog <- function(S,mu,sig,nu=1,condS=FALSE,keep0=FALSE){
    return(simVec)
 }
 
-poilogMLE <- function(n, nboot=0, trunc=-1, method='BFGS', control=list(maxit=1000)) {
-  if (is.matrix(n) | (is.data.frame(n))) stop(paste('n has',ncol(n),'colums, supply a vector or use function bipoilogMLE',sep=' ')) 
-  
-  print("working\n")
+poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0) {
+  control=list(maxit=1000, fnscale=length(n), parscale=c(1.0, 1.0))
+
+  if (is.matrix(n) | (is.data.frame(n))) {
+    stop(paste('n has',ncol(n),'colums, supply a vector or use function bipoilogMLE',sep=' ')) 
+  }
   
   # truncate the input
-  nt <- n[n > trunc]
+  if (trunc) n <- n[n > 0]
   
-  # guess the starting values from the distribution
-  startVals=c(mu=mean(log(nt)), log_sig=log(var(log(nt))))
-  
+  # guess innocuous start values
+  startVals=c(mu=start.mu, sig=start.sig)
+
   # dereplicate
-  un <- unique(nt)
+  un <- unique(n)
   nr <- rep(NA,length(un))
   for (i in 1:length(un)){ nr[i] <- sum(n%in%un[i]) }
   
-  lnL <- function(z, nr) {
-    if (TRUE) { stop (sprintf("z=%f %f\n", z[1], z[2])) }
-    logL <- -sum((log(dpoilog(un, z[1], exp(z[2]), trunc=trunc)))*nr)
-    return(logL)
+  # negative log likelihood is the objective
+  lnL <- function(z) {
+    -sum((log(dpoilog(un, z[1], exp(z[2]), trunc=trunc)))*nr)
   }
-  
-  fit <- optim(startVals, lnL, nr=nr, control=control, method=method)
+  fit <- optim(startVals, lnL, control=control, method=method, lower=-20, upper=20)
   
   if (fit$convergence!=0){
     if (fit$convergence==1) stop('the iteration limit has been reached!   try different startVals or increase maxit') 
@@ -186,96 +112,3 @@ poilogMLE <- function(n, nboot=0, trunc=-1, method='BFGS', control=list(maxit=10
   }  
   return(est)   
 }
-
-bipoilogMLE <- function(n1,n2=NULL,startVals=c(mu1=1,mu2=1,sig1=2,sig2=2,rho=0.5),
-                       nboot=0,zTrunc=TRUE,file=NULL,
-                       method='BFGS',control=list(maxit=1000)){
-  
-  
-  if (is.null(n2)){
-    if (!is.matrix(n1) & !is.data.frame(n1)) {stop('n2 is missing and n1 is not a matrix or data frame') }
-    if (ncol(n1)!=2) stop('n1 should have 2 columns when n2 is not given')
-    n2 <- n1[,2]
-    n1 <- n1[,1]
-  }
-  if (!is.null(n2) & (is.matrix(n1) | is.data.frame(n1))) stop('n1 is a matrix and n2 is specified')
-  if (length(n2)!=length(n2)) stop('n1 and n2 must be of equal length')
-  
-  z <- startVals
-  if (length(z)!=5) stop('length of startVals is not 5') 
-  if (z[3]<=0) stop('start value of sig1 is not larger than 0')
-  if (z[4]<=0) stop('start value of sig2 is not larger than 0')
-  if (-1>z[5] | z[5]>1) stop('start value of rho must be in the range -1 to 1')
-  
-  invRhoTrans <- function(w){
-     rho <- (1-exp(-1*w))/(1+exp(-1*w))
-     if (rho>0.9999) rho <- 0.9999
-     if (rho<(-0.9999)) rho <- -0.9999
-     return(rho)
-  } 
-  rhoTrans    <- function(rho) 1*log((1+rho)/(1-rho))
-  
-  z[3:4] <- log(z[3:4])
-  z[5]   <- rhoTrans(z[5])
-
-  xy <- cbind(n1,n2)
-  un <- unique(xy)
-  nr <- rep(NA,nrow(un))
-  for (i in 1:nrow(un)){ nr[i] <- sum(apply(xy,1,function(x) x[1]==un[i,1] & x[2]==un[i,2])) }
-  
-  lnL <- function(z,nr){
-    b <- 0
-    if (z[3] < (-372)) z[3] <- -372
-    if (z[4] < (-372)) z[4] <- -372
-    if (z[3] >   354)  z[3] <-  354
-    if (z[4] >   354)  z[4] <-  354
-    if (zTrunc) b <- log(1-dbipoilog(0,0,z[1],z[2],exp(z[3]),exp(z[4]),invRhoTrans(z[5])))
-    logL <- -sum((log(dbipoilog(un[,1],un[,2],z[1],z[2],exp(z[3]),exp(z[4]),invRhoTrans(z[5])))-b)*nr)
-    return(logL)
-  }
-  
-  fit <- optim(z,lnL,nr=nr,control=control,method=method)
-  
-  if (fit$convergence!=0){
-    if (fit$convergence==1) stop('the iteration limit has been reached!   try different startVals or increase maxit') 
-    if (fit$convergence==10) stop('degeneracy of the Nelder Mead simplex ....')
-    else stop(paste('unknown error in optimization', fit$message))
-  }
-  
-  fit$par <- c(as.numeric(fit$par),1-dpoilog(0,fit$par[1],exp(fit$par[3])),1-dpoilog(0,fit$par[2],exp(fit$par[4])))
-  est <- list('par'=c('mu1'=fit$par[1],'mu2'=fit$par[2],'sig1'=exp(fit$par[3]),
-         'sig2'=exp(fit$par[4]),'rho'=invRhoTrans(fit$par[5])),'p'=c(fit$par[6],fit$par[7]),'logLval'=-fit$value,'gof'=NULL,boot=NULL)
-         
-  if (nboot>0){
-    cat(paste('estimates: mu1:',round(fit$par[1],3), ' mu2:',round(fit$par[2],3),
-                ' sig1:',round(exp(fit$par[3]),3), ' sig2:',round(exp(fit$par[4]),3),
-                ' rho:',  round(invRhoTrans(fit$par[5]),3), sep=''),'\n')
-    cat('********     bootstrapping    ********\n')
-    bMat <- matrix(NA,nboot,6)
-    colnames(bMat) <- c('mu1','mu2','sig1','sig2','rho','logLval')
-    count <- 0
-    bStartVals <- fit$par
-    while (count<nboot){
-      bfit <- un <- nr <- NA
-      # simulations are conditonal on the number of species in the observed data set :
-      sim <- rbipoilog(length(n1),fit$par[1],fit$par[2],exp(fit$par[3]),exp(fit$par[4]),invRhoTrans(fit$par[5]),condS=TRUE,keep0=!zTrunc)
-      un <- unique(sim)
-      nr <- rep(NA,nrow(un))
-      for (i in 1:nrow(un)){ nr[i] <- sum(apply(sim,1,function(x) x[1]==un[i,1] & x[2]==un[i,2])) }
-      bfit <- try(optim(bStartVals,lnL,nr=nr,control=control,method=method),silent=TRUE)
-      if (class(bfit)!='try-error'){
-        count <- count+1
-        bMat[count,] <- c(bfit$par[1],bfit$par[2],exp(bfit$par[3]),exp(bfit$par[4]),invRhoTrans(bfit$par[5]),-bfit$value)
-        cat('   boot',count,'of',nboot,': ',c(bfit$par[1],bfit$par[2],exp(bfit$par[3]),
-                                     exp(bfit$par[4]),invRhoTrans(bfit$par[5])),'\n')
-      }
-      if (!is.null(file)) write.table(bMat[1:count,],file,sep='\t')
-    }
-    est$boot <- data.frame(bMat)
-    est$gof  <- which(sort(c(est$logLval,bMat[,6]))==est$logLval)/nboot
-  }  
-  
-  return(est)   
-}
-
-dyn.load('texmexseq_s_cint.so')
