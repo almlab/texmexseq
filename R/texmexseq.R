@@ -1,5 +1,3 @@
-dyn.load('texmexseq_s_cint.so')
-
 dpoilog <- function(n, mu, sig, trunc=FALSE) {
   if (length(mu)>1 | length(sig)>1) stop('vectorization of mu and sig is not supported') 
   if (any((n[n!=0]/trunc(n[n!=0]))!=1)) stop('all n must be integers')
