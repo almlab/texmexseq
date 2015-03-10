@@ -2,9 +2,11 @@ Package: texmexseq
 Type: Package
 Title: Treatment Effect eXplorer for Microbial Ecology eXperiments (using sequence counts)
 Version: 0.1
-Date: 2014-05-19
+Date: 2015-03-10
 Author: Scott Olesen
 Maintainer: Scott Olesen <swo@mit.edu>
-Description: functions for ...
+Description: Analysis and visualization of community dynamics in microbial
+             ecology experiments (that use sequence count data) using the
+             truncated Poisson lognormal distribution.
 License: GPL-3
 Encoding: latin1
