@@ -1,4 +1,5 @@
 \name{dpoilog}
+\alias{dpoilog}
 \alias{rpoilog}
 
 \title{probability density function for the Poisson lognormal distribution}
@@ -19,7 +20,7 @@
   \item{mu}{mean of lognormal part of distribution}
   \item{sig}{standard deviation of lognormal part of distribution}
   \item{trunc}{remove weight from zero counts?}
-  \item{conds}{are random samples conditional on \code{S}?}
+  \item{condS}{are random samples conditional on \code{S}?}
   \item{keep0}{do not discard zero counts?}
 }
 

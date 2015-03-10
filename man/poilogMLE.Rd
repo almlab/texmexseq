@@ -1,4 +1,5 @@
 \name{poilogMLE}
+\alias{poilogMLE}
 
 \title{maximum likelihood estimation for the Poisson lognormal}
 \description{
@@ -45,7 +46,7 @@ parameters (see \code{rbipoilog}).
     \item{p}{Approximate fraction of OTUs revealed by the sample}
     \item{logLval}{Log likelihood of the data given the estimated parameters}
     \item{gof}{Godness of fit measure obtained by checking the rank of
-        \code{logLval} against \code{logLval}’s obtained during the bootstrap
+        \code{logLval} against \code{logLval}'s obtained during the bootstrap
         procedure, (gof<0.05) or (gof>0.95) indicates lack of fit}
     \item{boot}{A data frame containing the bootstrap replicates of parameters and \code{logLval}}
 }
@@ -57,7 +58,7 @@ parameters (see \code{rbipoilog}).
 
 \examples{
 # create some random data
-x <- rpoilog(S=1000, mu=-2.0, sig=2.0, keep0=F)
+x <- rpoilog(S=1000, mu=-2.0, sig=2.0, keep0=FALSE)
 
 # fit that data
 res <- poilogMLE(x)

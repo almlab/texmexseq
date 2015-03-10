@@ -1,4 +1,5 @@
 \name{SamplePair}
+\alias{SamplePair}
 \alias{SampleQuad}
 
 \title{make and fit pairs or quads of samples}
@@ -16,7 +17,6 @@
   \item{sample0,sample1}{samples as produced by \code{Sample}}
   \item{name}{a name for the pair or quad to be used in plots}
   \item{control,treatment}{pairs as produced by \code{SamplePair}}
-  \item{sample}{a sample as returned by \code{Sample}}
   \item{trunc0,trunc1}{ignore and reweight zero counts?}
 }
 
@@ -39,7 +39,7 @@ are also mode top-down when using the higher-level \code{Experiment} command.
 
 \examples{
 # create some data
-random.sample <- function() Sample(rpoilog(S=1000, mu=-2.0, sig=2.0, condS=T))
+random.sample <- function() Sample(rpoilog(S=1000, mu=-2.0, sig=2.0, condS=TRUE))
 
 ct.before <- random.sample()
 ct.after <- random.sample()
@@ -51,13 +51,13 @@ ct <- SamplePair(ct.before, ct.after)
 tx <- SamplePair(tx.before, tx.after)
 
 # visualize the change in counts in a pair
-plot(ct)
+#plot(ct)
 
 # create a quad
 q <- SampleQuad(ct, tx)
 
 # visualize the changes in rescaled read counts
-plot(q)
+#plot(q)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}

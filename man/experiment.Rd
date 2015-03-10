@@ -1,4 +1,5 @@
 \name{Experiment}
+\alias{Experiment}
 \alias{ReadOtuTable}
 
 \title{Create many samples at once}
@@ -9,12 +10,13 @@
 
 \usage{
   Experiment(otu.table, pair.table, quad.table)
-  ReadOtuTable(filename)
+  ReadOtuTable(fn)
 }
 
 \arguments{
   \item{otu.table}{a filename or a dataframe (as produced by \code{ReadOtuTable})}
   \item{pair.table,quad.table}{a filename, as described below}
+  \item{fn}{the OTU table filename}
 }
 
 \details{

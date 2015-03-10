@@ -1,4 +1,5 @@
 \name{Sample}
+\alias{Sample}
 \alias{SampleFit}
 
 \title{make and fit samples of OTUs}
@@ -9,12 +10,13 @@
 
 \usage{
     Sample(n, name=NULL)
-    SampleFit(sample, trunc=TRUE, verbose=TRUE)
+    SampleFit(sample, trunc=TRUE, verbose=TRUE, ...)
 }
 
 \arguments{
   \item{n}{vector of OTU counts}
   \item{name}{a name for the sample to be used in plots}
+  \item{...}{extra arguments passed to \code{poilogMLE}}
   \item{sample}{a sample as returned by \code{Sample}}
   \item{trunc}{ignore and reweight zero counts?}
   \item{verbose}{print messages about fitting?}
@@ -45,13 +47,13 @@ counts <- rpoilog(S=1000, mu=-2.0, sig=2.0)
 s <- Sample(counts)
 
 # visualize the distribution of counts in a sample
-plot(s)
+#plot(s)
 
 # make a fit object using that sample
 f <- SampleFit(s)
 
 # visualize the quality of the fit
-plot(f)
+#plot(f)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}
