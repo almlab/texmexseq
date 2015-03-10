@@ -18,10 +18,10 @@ dpoilog <- function(n, mu, sig, trunc=FALSE) {
      n_obs=as.integer(length(n)), val=double(length(n)))$val
 }
 
-rpoilog <- function(S, mu, sig, nu=1, condS=FALSE, keep0=FALSE){
+rpoilog <- function(S, mu, sig, condS=FALSE, keep0=FALSE){
    sim <- function(nr){
      lamx <- rnorm(nr)
-     x <- rpois(nr,exp(sig*lamx+mu+log(nu)))
+     x <- rpois(nr,exp(sig*lamx+mu))
      if (!keep0) x <- x[x>0]
      return(x)
    }
@@ -30,7 +30,6 @@ rpoilog <- function(S, mu, sig, nu=1, condS=FALSE, keep0=FALSE){
    if (!is.finite(S)) stop('S is not finite')
    if ((S/trunc(S))!=1) stop('S is not an integer')
    if (sig<0) stop('sig is not positive')
-   if (nu<0) stop('nu is not positive')
    
    if (condS) {
      simVec <- vector('numeric',0)
@@ -94,7 +93,7 @@ poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, 
     while (count<nboot){
       bfit <- un <- nr <- NA
       # simulations are conditonal on the number of species in the observed data set :
-      sim <- rpoilog(length(n),fit$par[1],exp(fit$par[2]),condS=TRUE,keep0=!zTrunc)
+      sim <- rpoilog(length(n),fit$par[1],exp(fit$par[2]),condS=TRUE,keep0=!trunc)
       un <- unique(sim)
       nr <- rep(NA,length(un))
       for (i in 1:length(un)){ nr[i] <- sum(sim%in%un[i]) }
