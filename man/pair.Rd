@@ -51,13 +51,13 @@ ct <- SamplePair(ct.before, ct.after)
 tx <- SamplePair(tx.before, tx.after)
 
 # visualize the change in counts in a pair
-#plot(ct)
+plot(ct)
 
 # create a quad
 q <- SampleQuad(ct, tx)
 
 # visualize the changes in rescaled read counts
-#plot(q)
+plot(q)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}

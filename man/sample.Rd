@@ -47,13 +47,13 @@ counts <- rpoilog(S=1000, mu=-2.0, sig=2.0)
 s <- Sample(counts)
 
 # visualize the distribution of counts in a sample
-#plot(s)
+plot(s)
 
 # make a fit object using that sample
 f <- SampleFit(s)
 
 # visualize the quality of the fit
-#plot(f)
+plot(f)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}
