@@ -16,7 +16,7 @@ Experiment <- function(otu.table, pair.table, quad.table) {
   # read in the pair, quad, and otu tables. make the samples and fit them.
 
   # read in the tables if filenames are given
-  if (class(pair.table) == "character") pair.table <- ReadSampleTable(pair.table)
+  if (class(pair.table) == "character") pair.table <- ReadPairTable(pair.table)
   if (class(quad.table) == "character") quad.table <- ReadQuadTable(quad.table)
 
   # check that the pairs in the quad table are all in the pairs table
