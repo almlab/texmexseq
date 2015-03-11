@@ -7,10 +7,6 @@ Sample <- function(n, name=NULL) {
   s
 }
 
-plot.texmex.sample <- function(s) {
-  hist(s$n, main=s$name, xlab='counts')
-}
-
 SampleFit <- function(sample, trunc=TRUE, verbose=TRUE, ...) {
   # fit the observation to a poilog
   if (verbose) {
@@ -49,8 +45,8 @@ SampleFit <- function(sample, trunc=TRUE, verbose=TRUE, ...) {
   fit
 }
 
-plot.texmex.fit <- function(f, log=FALSE, type='l', lwd=2, cex=0.75, npoints=10, label=TRUE, ...) {
-  # PP plot
+PlotFitPP <- function(f, log=FALSE, npoints=10) {
+  # PP plot of a texmex fit
 
   # extend the empirical cdf with 1's
   display.ecdf <- c(f$ecdf.values, rep(1.0, length(f$F.values) - length(f$ecdf.values)))
@@ -60,25 +56,23 @@ plot.texmex.fit <- function(f, log=FALSE, type='l', lwd=2, cex=0.75, npoints=10,
   
   if (log) {
     # invert the cdf and take the log in xy
-    if (label) {
-      xlab <- "100 - empirical percent"
-      ylab <- "100 - theoretical percent"
-    }
+    xlab <- "100 - empirical percent"
+    ylab <- "100 - theoretical percent"
     plog <- "xy"
     show <- unique(cbind(100*(1.0 - display.ecdf), 100*(1.0 - f$F.values)))
     decr <- TRUE
   } else {
-    if (label) {
-      xlab <- "empirical percent"
-      ylab <- "theoretical percent"
-    }
+    xlab <- "empirical percent"
+    ylab <- "theoretical percent"
     plog <- ""
     show <- unique(cbind(100*display.ecdf, 100*f$F.values))
     decr <- FALSE
   }
   
+  lwd <- 2
+  cex <- 0.75
   sorted.show <- show[order(show[,1], decreasing=decr), ]
-  plot(sorted.show, xlab=xlab, ylab=ylab, log=plog, type=type, cex=cex, lwd=lwd, main=f$name, bty='n', ...)
+  plot(sorted.show, xlab=xlab, ylab=ylab, log=plog, type='l', cex=cex, lwd=lwd, main=f$name, bty='n')
   
   points(sorted.show[2:npoints, ], cex=cex, pch="|")
   lines(rbind(c(0,0), c(100,100)), lty=3, lwd=lwd, lend=2)
@@ -107,15 +101,7 @@ SamplePair <- function(sample0, sample1, name=NULL, trunc0=TRUE, trunc1=TRUE) {
   sp
 }
 
-hist.texmex.pair <- function(p, exclude=0) {
-  # plot a histogram of the delta_cdfs, excluding 0's (or NULL's if you want to see everything)
-  vals <- p$dF[p$dF != exclude]
-  hist(vals, main=p$name, xlab="delta F")
-  med <- median(vals)
-  abline(v=med, lty=2)
-}
-
-plot.texmex.pair <- function(pair, log='xy', fit=TRUE, highlight=NULL) {
+PlotPair <- function(pair, log='xy', fit=TRUE, highlight=NULL) {
   # show the before/after counts for this sample
   if (log == '') {
     x <- pair$sample0$n
@@ -144,7 +130,7 @@ SampleQuad <- function(control, treatment, name=NULL) {
   sq
 }
 
-plot.texmex.quad <- function(quad, highlight=NULL, dF=FALSE, jitter.amount=0.0, ...) {
+PlotQuad <- function(quad, highlight=NULL, dF=FALSE, jitter.amount=0.0) {
   # plot the dz against one another, unless dF is specified
   if (dF) {
     x <- quad$control$dF
@@ -160,9 +146,9 @@ plot.texmex.quad <- function(quad, highlight=NULL, dF=FALSE, jitter.amount=0.0, 
   }
   
   if (dF) {
-    plot(x, y, xlab=quad$control$name, ylab=quad$treatment$name, main=quad$name, xlim=c(-1.0,1.0), ylim=c(-1.0,1.0), ...)
+    plot(x, y, xlab=quad$control$name, ylab=quad$treatment$name, main=quad$name, xlim=c(-1.0,1.0), ylim=c(-1.0,1.0))
   } else {
-    plot(x, y, asp=1, xlab=quad$control$name, ylab=quad$treatment$name, main=quad$name, ...)
+    plot(x, y, asp=1, xlab=quad$control$name, ylab=quad$treatment$name, main=quad$name)
   }
   abline(0, 1, lty=2)
   abline(h=0, lty=2)
@@ -170,7 +156,7 @@ plot.texmex.quad <- function(quad, highlight=NULL, dF=FALSE, jitter.amount=0.0, 
   
   # find and add the infinite points at the graph edge
   fp <- finitize.points(x, y)
-  points(fp$x, fp$y, ...)
+  points(fp$x, fp$y)
 
   if (!is.null(highlight)) points(fp$x[highlight], fp$y[highlight], col='red')
 }

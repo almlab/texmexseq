@@ -1,4 +1,3 @@
 useDynLib(texmexseq)
 export(dpoilog,rpoilog,poilogMLE,Sample,SampleFit,SamplePair,SampleQuad,ReadOtuTable,Experiment,
-  as.data.frame.texmex.experiment,plot.texmex.experiment,plot.texmex.sample,plot.texmex.fit,
-  plot.texmex.pair,hist.texmex.pair,plot.texmex.quad)
+  PlotFitPP,PlotPair,PlotQuad,ExtractQuadData)
