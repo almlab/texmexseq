@@ -39,13 +39,3 @@ plot(my.quad, dF=TRUE)
 # points right on top of one another. let's add a little noise to get
 # a better sense of the point density
 plot(my.quad, dF=TRUE, jitter.amount=0.1)
-
-# maybe I'm interested in OTUs that have dz below some value in the
-# control but above some value in the treatment. i'll pick out those
-# OTUs and then highlight them on the plot
-my.quad <- my.experiment$quads$inoculum1
-interesting.otus <- my.quad$control$dz < 1.0 & my.quad$treatment$dz > 1.0
-plot(my.quad, highlight=interesting.otus)
-
-# i can directly ask which OTUs those are and investigate them
-rownames(my.experiment$otu.table)[interesting.rows]

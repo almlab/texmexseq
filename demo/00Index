@@ -1,2 +1,3 @@
 load-from-tables	load samples, pairs, and quads all at once
 build-from-vectors	build up samples, pairs, and quads from vectors
+interpret-data	a closer look at the example data sets

@@ -1,5 +1,5 @@
 name    before  after
-inoculum1.control   inoculum1.control.t0 inoculum1.control.t2
-inoculum1.treatment inoculum1.treatment.t0 inoculum1.treatment.t2
-inoculum2.control   inoculum2.control.t0 inoculum2.control.t2
-inoculum2.treatment inoculum2.treatment.t0 inoculum2.treatment.t2
+inoculum1.control   inoculum1.control.before inoculum1.control.after
+inoculum1.treatment inoculum1.treatment.before inoculum1.treatment.after
+inoculum2.control   inoculum2.control.before inoculum2.control.after
+inoculum2.treatment inoculum2.treatment.before inoculum2.treatment.after
