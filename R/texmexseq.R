@@ -49,8 +49,8 @@ rpoilog <- function(S, mu, sig, condS=FALSE, keep0=FALSE){
    return(simVec)
 }
 
-poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0) {
-  control=list(maxit=1000, fnscale=length(n), parscale=c(1.0, 1.0))
+poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
+  control=list(fnscale=length(n)), ...) {
 
   if (is.matrix(n) | (is.data.frame(n))) {
     stop(paste('n has',ncol(n),'colums, supply a vector or use function bipoilogMLE',sep=' ')) 
@@ -71,7 +71,7 @@ poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, 
   lnL <- function(z) {
     -sum((log(dpoilog(un, z[1], exp(z[2]), trunc=trunc)))*nr)
   }
-  fit <- optim(startVals, lnL, control=control, method=method, lower=-20, upper=20)
+  fit <- optim(startVals, lnL, control=control, method=method, lower=-20, upper=20, ...)
   
   if (fit$convergence!=0){
     if (fit$convergence==1) stop('the iteration limit has been reached!   try different startVals or increase maxit') 

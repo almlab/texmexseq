@@ -8,7 +8,7 @@
 
 \usage{
   poilogMLE(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
-  control=list(maxit=1000, fnscale=length(n), parscale=c(1.0, 1.0)))
+  control=list(fnscale=length(n)), ...)
 }
 
 \arguments{
@@ -19,10 +19,11 @@
   \item{start.mu}{initial estimate for the lognormal mean}
   \item{start.sig}{initial estimate for the lognormal standard deviation}
   \item{control}{list of parameters for \code{optim}}
+  \item{...}{further parameters to go to \code{optim}}
 }
 
 \details{
-The function estimates parameters mean mu and standard deviation sig.
+The function estimates parameters mean \code{mu} and standard deviation \code{sig}.
 
 The parameters must be given starting values for the optimization procedure.
 The default values here worked well when fitting OTUs in the referenced paper.
