@@ -14,28 +14,28 @@ my.experiment <- Experiment(otu.table.filename, pairs.table.filename, quads.tabl
 
 # it's all done!
 # now we can plot the distribution of counts in an individual sample
-plot(my.experiment$quads$inoculum1$control$sample0)
+hist(my.experiment$quads$inoculum1$control$sample0$n)
 
 # visualize the quality of the fit of the Poisson lognormal distribution
 # to counts in this sample
 # fit0 = the fit for the first sample in the quad
-plot(my.experiment$quads$inoculum1$control$fit0)
+FitPpPlot(my.experiment$quads$inoculum1$control$fit0)
 
 # i'm interested in this inoculum1 quad, so i'll just define...
 my.quad <- my.experiment$quads$inoculum1
 
 # or, we could show how the counts for every OTU compare in two samples
 # (i.e., a pair) before any Poisson lognormal fitting is applied
-plot(my.quad$control)
+PairPlot(my.quad$control)
 
 # how do the rescaled reads for OTUs in a quad behave?
-plot(my.quad)
+QuadPlot(my.quad)
 
 # or, the same quad, but now showing the change in F (cdf) rather than
 # the change in rescaled reads
-plot(my.quad, dF=TRUE)
+QuadPlot(my.quad, dF=TRUE)
 
 # hmm.. that might be a little tricky to see, since there are a lot of
 # points right on top of one another. let's add a little noise to get
 # a better sense of the point density
-plot(my.quad, dF=TRUE, jitter.amount=0.1)
+QuadPlot(my.quad, dF=TRUE, jitter.amount=0.1)

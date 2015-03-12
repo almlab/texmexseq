@@ -15,12 +15,12 @@ inoc2 <- my.experiment$quads$inoculum2
 # composition changes that were mostly unrelated to the effects the
 # experimental unit went through: the points in the middle of the plot look
 # mostly uncorrelated.
-plot(inoc1)
+PlotQuad(inoc1)
 
 # in inoculum 2, however, the control and experimental unit underwent similar
 # changes, suggesting that the treatment for inoculum 2 had a weak effeck: it
 # didn't do much beyond what the control did.
-plot(inoc2)
+PlotQuad(inoc2)
 
 # maybe we're interested in OTUs that bloomed in inoculum 2. to pick some
 # OTUs that bloomed in the treatment but not the control, maybe I would pick
@@ -31,7 +31,7 @@ otus <- inoc2$control$dz < 1 & inoc2$treatment$dz > 1
 otus <- replace(otus, is.na(otus), FALSE)
 
 # now we can see which OTUs those are
-plot(inoc2, highlight=otus)
+PlotQuad(inoc2, highlight=otus)
 
 # most of them are on the top axis, meaning that their dz is +inf, which means
 # that they went from 0 counts in the before timepoint to more than 0 in the

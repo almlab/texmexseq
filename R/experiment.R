@@ -71,7 +71,7 @@ Experiment <- function(otu.table, pair.table, quad.table) {
   expt
 }
 
-as.data.frame.texmex.experiment <- function(expt, quad.name) {
+ExtractQuadData <- function(expt, quad.name) {
   # extract relevant information on a quad from the otu table and
   # computed z's
 
@@ -115,15 +115,4 @@ as.data.frame.texmex.experiment <- function(expt, quad.name) {
     tx.t1.n=tx.t1$n, tx.t1.ra=tx.t1$ra, tx.t1.z=tx.t1.z, tx.t1.F=tx.t1.F,
     tx.lfc=tx.lfc, tx.dz=tx.dz, tx.dF=tx.dF
   )
-}
-
-plot.texmex.experiment <- function(expt, folder='plots') {
-  # plot all the quads for this experiment, save them to file
-  print(sprintf("putting plots in %s/", folder))
-
-  for (quad in expt$quads) {
-    pdf(sprintf("%s/%s.pdf", folder, quad$name))
-    plot(quad)
-    dev.off()
-  }
 }
