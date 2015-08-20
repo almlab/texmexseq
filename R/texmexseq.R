@@ -49,25 +49,25 @@ rpoilog <- function(S, mu, sig, condS=FALSE, keep0=FALSE){
    return(simVec)
 }
 
-poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
+poilogMLE <- function(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
   control=list(fnscale=length(n)), ...) {
 
   if (is.matrix(n) | (is.data.frame(n))) {
-    stop(paste('n has',ncol(n),'colums, supply a vector or use function bipoilogMLE',sep=' ')) 
+    stop(paste('n has',ncol(n),'colums, supply a vector',sep=' ')) 
   }
   
   # truncate the input
   if (trunc) n <- n[n > 0]
   
-  # guess innocuous start values
+  # guess start values
   startVals=c(mu=start.mu, sig=start.sig)
 
   # dereplicate
-  un <- unique(n)
-  nr <- rep(NA,length(un))
+  un <- unique(n) # unique N values (counts)
+  nr <- rep(NA,length(un)) # number of replicates each unique N has
   for (i in 1:length(un)){ nr[i] <- sum(n%in%un[i]) }
   
-  # negative log likelihood is the objective
+  # negative log likelihood is the objective function
   lnL <- function(z) {
     -sum((log(dpoilog(un, z[1], exp(z[2]), trunc=trunc)))*nr)
   }
@@ -79,33 +79,23 @@ poilogMLE <- function(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, 
     else stop(paste('unknown error in optimization', fit$message))
   } 
   
-  fit$par <- c(as.numeric(fit$par),1-dpoilog(0,fit$par[1],exp(fit$par[2])))
-  est <- list('par'=c('mu'=fit$par[1],'sig'=exp(fit$par[2])),'p'=fit$par[3],'logLval'=-fit$value,'gof'=NULL,boot=NULL)
+  fit$par <- c(as.numeric(fit$par), 1 - dpoilog(0, fit$par[1], exp(fit$par[2])))
+  res <- list('par'=c('mu'=fit$par[1],'sig'=exp(fit$par[2])),'p'=fit$par[3],'logLval'=-fit$value,'gof'=NULL,boot=NULL)
   
-  if (nboot>0){
-    cat(paste('estimates: mu: ',round(fit$par[1],3),' sig ',round(exp(fit$par[2]),3),sep=''),'\n')
-    cat('********     bootstrapping    ********\n')
-    bMat <- matrix(NA,nboot,3)
-    colnames(bMat) <- c('mu','sig2','logLval')
-    count <- 0
-    kat  <- seq(0,nboot,by=100)
-    bStartVals <- fit$par
-    while (count<nboot){
-      bfit <- un <- nr <- NA
-      # simulations are conditonal on the number of species in the observed data set :
-      sim <- rpoilog(length(n),fit$par[1],exp(fit$par[2]),condS=TRUE,keep0=!trunc)
-      un <- unique(sim)
-      nr <- rep(NA,length(un))
-      for (i in 1:length(un)){ nr[i] <- sum(sim%in%un[i]) }
-      bfit <- try(optim(bStartVals,lnL,nr=nr,control=control,method=method),silent=TRUE)
-      if (class(bfit)!='try-error'){
-        count <- count+1
-        bMat[count,] <- c(bfit$par[1],exp(bfit$par[2]),-bfit$value)
-        if (count%in%kat) cat('   boot',count,'of',nboot,'\n')
-      }
+  return(res)
+}
+
+texmex.fit <- function(n, start.mus=c(-2.0, -1.0, 0.0, 1.0, 2.0), start.sigs=rep(1.0, times=5)) {
+    if (length(start.mus) != length(start.sigs)) stop('must provide same number of starting mu and sigma values')
+
+    for (i in seq(from=1, to=(length(start.mus)))) {
+         start.mu <- start.mus[i]
+         start.sig <- start.sigs[i]
+         tryCatch({
+             res <- poilogMLE(n, start.mu, start.sig)
+             return(res)
+         }, error = function(e) warning(paste("fit", i, "failed", sep=" ")))
     }
-    est$boot <- data.frame(bMat)
-    est$gof  <- which(sort(c(est$logLval,bMat[,3]))==est$logLval)/nboot
-  }  
-  return(est)   
+
+    stop("all fit attempts failed")
 }
