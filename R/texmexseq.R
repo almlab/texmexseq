@@ -1,4 +1,4 @@
-dpoilog <- function(n, mu, sig, trunc=FALSE) {
+dpoilog <- function(n, mu, sig, trunc=TRUE) {
   if (length(mu)>1 | length(sig)>1) stop('vectorization of mu and sig is not supported') 
   if (any((n[n!=0]/trunc(n[n!=0]))!=1)) stop('all n must be integers')
   if (!all(is.finite(c(mu,sig)))) stop('all parameters should be finite')
@@ -85,14 +85,14 @@ poilogMLE <- function(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
   return(res)
 }
 
-texmex.fit <- function(n, start.mus=c(-2.0, -1.0, 0.0, 1.0, 2.0), start.sigs=rep(1.0, times=5)) {
+texmex.fit <- function(n, start.mus=c(-2.0, -1.0, 0.0, 1.0, 2.0), start.sigs=rep(1.0, times=5), ...) {
     if (length(start.mus) != length(start.sigs)) stop('must provide same number of starting mu and sigma values')
 
     for (i in seq(from=1, to=(length(start.mus)))) {
          start.mu <- start.mus[i]
          start.sig <- start.sigs[i]
          tryCatch({
-             res <- poilogMLE(n, start.mu, start.sig)
+             res <- poilogMLE(n, start.mu, start.sig, ...)
              return(res)
          }, error = function(e) warning(paste("fit", i, "failed", sep=" ")))
     }

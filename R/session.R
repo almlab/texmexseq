@@ -3,18 +3,18 @@ library(ggplot2)
 
 ReadOtuTable <- function(fn) read.table(fn, header=T, row.names=1, check.names=F)
 
-z.transform.counts <- function(n) {
+z.transform.sample <- function(n) {
     fit <- texmex.fit(n)
     z <- (log(n) - fit$par['mu']) / fit$par['sig']
     return(z)
 }
 
 z.transform.table <- function(otus) {
-    z.otus <- as.data.frame(apply(otus, 2, z.transform.counts))
+    z.otus <- as.data.frame(apply(otus, 2, z.transform.sample))
     return(z.otus)
 }
 
-f.transform.counts <- function(n) {
+f.transform.sample <- function(n) {
     fit <- texmex.fit(n)
 
     # get the pdf of the poilog (parameterized by the fit we just did) for 1, 2, ..., up
@@ -31,7 +31,7 @@ f.transform.counts <- function(n) {
 }
 
 f.transform.table <- function(otus) {
-    f.otus <- as.data.frame(apply(otus, 2, f.transform.counts))
+    f.otus <- as.data.frame(apply(otus, 2, f.transform.sample))
     return(f.otus)
 }
 
@@ -63,8 +63,8 @@ ppplot <- function(n, n.points=10) {
 }
 
 plot.pair.counts <- function(counts) {
-    if (!all(sort(names(counts)) == c("before", "after"))) {
-        stop("input a data frame of counts with two columns named 'before' and 'after'")
+    if (!all(c("before", "after") %in% names(counts))) {
+        stop("input a data frame of counts with columns named 'before' and 'after'")
     }
 
     p <- ggplot(counts, aes(x=before, y=after)) + geom_point()
@@ -88,7 +88,6 @@ plot.quad <- function(quad) {
     p <- ggplot(quad, aes(x=d.control, y=d.treatment)) +
       geom_point() + 
       coord_fixed() +
-      #xlim(-1, 1) + ylim(-1, 1) +
       xlim(-lim, lim) + ylim(-lim, lim) +
       theme_bw()
     return(p)
