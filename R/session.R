@@ -3,16 +3,19 @@ library(ggplot2)
 
 ReadOtuTable <- function(fn) read.table(fn, header=T, row.names=1, check.names=F)
 
+dfapply <- function(frame, fun) {
+  applied <- as.data.frame(apply(frame, 2, fun))
+  rownames(applied) <- rownames(frame)
+  return(applied)
+}
+
 z.transform.sample <- function(n) {
     fit <- texmex.fit(n)
     z <- (log(n) - fit$par['mu']) / fit$par['sig']
     return(z)
 }
 
-z.transform.table <- function(otus) {
-    z.otus <- as.data.frame(apply(otus, 2, z.transform.sample))
-    return(z.otus)
-}
+z.transform.table <- function(otu) dfapply(otu, z.transform.sample)
 
 f.transform.sample <- function(n) {
     fit <- texmex.fit(n)
@@ -30,10 +33,7 @@ f.transform.sample <- function(n) {
     return(f)
 }
 
-f.transform.table <- function(otus) {
-    f.otus <- as.data.frame(apply(otus, 2, f.transform.sample))
-    return(f.otus)
-}
+f.transform.table <- function(frame) dfapply(frame, f.transform.sample)
 
 ppplot <- function(n, n.points=10) {
     # convenience function for plotting
@@ -77,13 +77,9 @@ plot.quad <- function(quad) {
         stop("input a data frame of with d.control and d.treatment")
     }
   
-  max.abs.finite <- function(x) {
-    id <- is.finite(x)
-    max(abs(x[id]))
-  }
-  
   # make this a square plot: 0 in the middle, equal axes up and down
-  lim <- select(quad, d.control, d.treatment) %>% apply(2, max.abs.finite) %>% max
+  # get the finite number in the table whose absolute value
+  lim <- select(quad, d.control, d.treatment) %>% apply(2, function(x) max(abs(Filter(is.finite, x)))) %>% max
 
     p <- ggplot(quad, aes(x=d.control, y=d.treatment)) +
       geom_point() + 
@@ -101,5 +97,9 @@ quad.table <- function(otu, control.before, control.after, treatment.before, tre
                         control.after=otu[[control.after]],
                         treatment.before=otu[[treatment.before]],
                         treatment.after=otu[[treatment.after]])
-  new.otu <- mutate(new.otu, d.control=control.after-control.before, d.treatment=treatment.after-treatment.before)
+  new.otu <- mutate(new.otu,
+                    d.control=control.after-control.before,
+                    d.treatment=treatment.after-treatment.before,
+                    otu.id=rownames(otu))
+  return(new.otu)
 }
