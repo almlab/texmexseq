@@ -71,16 +71,25 @@ plot.pair.counts <- function(counts) {
     return(p)
 }
 
-plot.quad <- function(f.table) {
-    if (!all(c('control.before', 'control.after', 'treatment.before', 'treatment.after') %in% names(f.table))) {
-        stop("input a data frame of F values with four columns named 'control.before', 'control.after', 'treatment.before', 'treatment.after'")
+plot.quad <- function(quad) {
+  expected.cols <- c('d.control', 'd.treatment')
+    if (!all(expected.cols %in% names(quad))) {
+        stop("input a data frame of with d.control and d.treatment")
     }
+  
+  max.abs.finite <- function(x) {
+    id <- is.finite(x)
+    max(abs(x[id]))
+  }
+  
+  # make this a square plot: 0 in the middle, equal axes up and down
+  lim <- select(quad, d.control, d.treatment) %>% apply(2, max.abs.finite) %>% max
 
-    diff.f.table <- mutate(f.table, control=control.after-control.before, treatment=treatment.after-treatment.before)
-    p <- ggplot(diff.f.table, aes(x=control, y=treatment)) +
+    p <- ggplot(quad, aes(x=d.control, y=d.treatment)) +
       geom_point() + 
       coord_fixed() +
-      xlim(-1, 1) + ylim(-1, 1) +
+      #xlim(-1, 1) + ylim(-1, 1) +
+      xlim(-lim, lim) + ylim(-lim, lim) +
       theme_bw()
     return(p)
 }
@@ -89,8 +98,9 @@ quad.table <- function(otu, control.before, control.after, treatment.before, tre
   if (!all(c(control.before, control.after, treatment.before, treatment.after) %in% names(otu))) {
     stop("one of the specified names is not a column name in the input table")
   }
-  data.frame(control.before=otu[[control.before]],
-             control.after=otu[[control.after]],
-             treatment.before=otu[[treatment.before]],
-             treatment.after=otu[[treatment.after]])
+  new.otu <- data.frame(control.before=otu[[control.before]],
+                        control.after=otu[[control.after]],
+                        treatment.before=otu[[treatment.before]],
+                        treatment.after=otu[[treatment.after]])
+  new.otu <- mutate(new.otu, d.control=control.after-control.before, d.treatment=treatment.after-treatment.before)
 }
