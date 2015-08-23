@@ -3,7 +3,7 @@ dpoilog <- function(n, mu, sig, trunc=TRUE) {
   if (any((n[n!=0]/trunc(n[n!=0]))!=1)) stop('all n must be integers')
   if (!all(is.finite(c(mu,sig)))) stop('all parameters should be finite')
   if (sig<=0) stop('sig is not larger than 0')
-  if (trunc & all(n == 0)) warning('all n will be truncated')
+  if (trunc & length(n) > 1 & all(n == 0)) warning('all n will be truncated')
   
   pdfs <- .dpoilog(n, mu, sig)
   if (trunc) {
