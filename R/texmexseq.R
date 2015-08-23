@@ -87,6 +87,7 @@ poilogMLE <- function(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
 
 texmex.fit <- function(n, start.mus=c(-2.0, -1.0, 0.0, 1.0, 2.0), start.sigs=rep(1.0, times=5), ...) {
     if (length(start.mus) != length(start.sigs)) stop('must provide same number of starting mu and sigma values')
+  if(!all(n == as.integer(n))) stop('texmex only fits integers; maybe you\'re using relative abundances?')
 
     for (i in seq(from=1, to=(length(start.mus)))) {
          start.mu <- start.mus[i]
