@@ -90,8 +90,10 @@ plot.quad <- function(quad) {
 }
 
 quad.table <- function(otu, control.before, control.after, treatment.before, treatment.after) {
-  if (!all(c(control.before, control.after, treatment.before, treatment.after) %in% names(otu))) {
-    stop("one of the specified names is not a column name in the input table")
+  missing.names <- Filter(function(x) !(x %in% names(otu)), c(control.before, control.after, treatment.before, treatment.after))
+  if (length(missing.names > 0)) {
+    stop(paste("at least one of the specified names is not a column name in the input table:",
+               paste(missing.names, sep=" ")))
   }
   new.otu <- data.frame(control.before=otu[[control.before]],
                         control.after=otu[[control.after]],
