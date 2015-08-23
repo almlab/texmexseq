@@ -1,0 +1,39 @@
+# these are some commands that tell this demo where to find the demo data
+otu.table.filename <- system.file('demo', 'otus.dat', package='texmexseq')
+
+# first, load up an OTU table of raw counts
+otu.table <- ReadOtuTable(otu.table.filename)
+
+# transform all the counts to F values. (you could transform to z values using
+# the command z.transform.table instead.)
+f.table <- f.transform.table(otu.table)
+
+# you can evaluate how good the fit was to any particular sample by making
+# a PP plot. (it's a ggplot object, so you can add layers and manipulate the
+# labels as you like.)
+ppplot(f.table$inoculum1.control.before)
+
+# now pull out a "quad", four before/after control/treatment samples.
+# this command pulls out the four columns from the f.table, pulls out
+# the OTU IDs (which were previously just rownames), and computes the
+# change in F in the control and treatment
+quad <- quad.table(f.table, 'inoculum1.control.before', 'inoculum1.control.after',
+                            'inoculum1.treatment.before', 'inoculum1.treatment.after')
+
+# a plot of this quad will compare the changes in F against one another
+# like ppplot, quad.plot produces a ggplot object.
+p <- quad.plot(quad)
+p
+
+# the plot might help you decide what your OTUs of interest will be.
+# the filter command from dplyr can really help here.
+# here, i'm picking all those OTUs that have deltaF < 0.5 in the control but
+# deltaF > 0.5 in the treamtent.
+interesting <- filter(quad, d.control < 0.5, d.treatment > 0.5)
+
+# i can add those in a separate color onto the plot
+p + geom_points(data=interesting, col='red')
+
+# and i can ask which OTUs are those (with the ones that have the biggest
+# increase in F at the top)
+arrange(interesting, desc(d.treatment))
