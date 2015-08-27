@@ -37,19 +37,12 @@ Truncation should only be turned off if all the known OTUs of the sequenced
 community are known. In most cases, this is not applicable, since it is usually
 not possible to know if an OTU had zero counts because it is not present in
 the environment or if it is present but in low abundance.
-
-Parametric bootstrapping simulate new sets of observations using the estimated
-parameters (see \code{rbipoilog}).
 }
 
 \value{
     \item{par}{Maximum likelihood estimates of the parameters}
     \item{p}{Approximate fraction of OTUs revealed by the sample}
     \item{logLval}{Log likelihood of the data given the estimated parameters}
-    \item{gof}{Godness of fit measure obtained by checking the rank of
-        \code{logLval} against \code{logLval}'s obtained during the bootstrap
-        procedure, (gof<0.05) or (gof>0.95) indicates lack of fit}
-    \item{boot}{A data frame containing the bootstrap replicates of parameters and \code{logLval}}
 }
 
 \seealso{

@@ -10,7 +10,7 @@
 }
 
 \usage{
-    dpoilog(n, mu, sig, trunc=FALSE)
+    dpoilog(n, mu, sig, trunc=TRUE)
     rpoilog(S, mu, sig, condS=FALSE, keep0=FALSE)
 }
 
