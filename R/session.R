@@ -62,15 +62,6 @@ ppplot <- function(n, n.points=10) {
     return(p)
 }
 
-plot.pair.counts <- function(counts) {
-    if (!all(c("before", "after") %in% names(counts))) {
-        stop("input a data frame of counts with columns named 'before' and 'after'")
-    }
-
-    p <- ggplot(counts, aes(x=before, y=after)) + geom_point()
-    return(p)
-}
-
 plot.quad <- function(quad) {
   expected.cols <- c('d.control', 'd.treatment')
     if (!all(expected.cols %in% names(quad))) {

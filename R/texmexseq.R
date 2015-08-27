@@ -80,7 +80,7 @@ poilogMLE <- function(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
   } 
   
   fit$par <- c(as.numeric(fit$par), 1 - dpoilog(0, fit$par[1], exp(fit$par[2])))
-  res <- list('par'=c('mu'=fit$par[1],'sig'=exp(fit$par[2])),'p'=fit$par[3],'logLval'=-fit$value,'gof'=NULL,boot=NULL)
+  res <- list('par'=c('mu'=fit$par[1],'sig'=exp(fit$par[2])),'p'=fit$par[3],'logLval'=-fit$value)
   
   return(res)
 }
