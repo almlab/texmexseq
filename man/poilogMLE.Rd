@@ -7,17 +7,16 @@
 }
 
 \usage{
-  poilogMLE(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
+  poilogMLE(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
   control=list(fnscale=length(n)), ...)
 }
 
 \arguments{
   \item{n}{vector of observed counts}
-  \item{nboot}{number of bootstrapping iterations}
-  \item{trunc}{remove weight from zero counts?}
-  \item{method}{optimization method for \code{optim}}
   \item{start.mu}{initial estimate for the lognormal mean}
   \item{start.sig}{initial estimate for the lognormal standard deviation}
+  \item{trunc}{remove weight from zero counts?}
+  \item{method}{optimization method for \code{optim}}
   \item{control}{list of parameters for \code{optim}}
   \item{...}{further parameters to go to \code{optim}}
 }
@@ -55,10 +54,10 @@ the environment or if it is present but in low abundance.
 x <- rpoilog(S=1000, mu=-2.0, sig=2.0, keep0=FALSE)
 
 # fit that data
-res <- poilogMLE(x)
+res <- poilogMLE(x, 2.0, -2.0)
 
 # the results should be fairly robust to the starting parameters
-res2 <- poilogMLE(x, start.mu=2.0, start.sig=0.5)
+res2 <- poilogMLE(x, 1.0, 0.5)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}

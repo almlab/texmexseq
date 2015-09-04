@@ -1,11 +1,9 @@
 library(dplyr)
 library(ggplot2)
 
-ReadOtuTable <- function(fn) read.table(fn, header=T, row.names=1, check.names=F)
-
-dfapply <- function(frame, fun) {
-  applied <- as.data.frame(apply(frame, 2, fun))
-  rownames(applied) <- rownames(frame)
+dfapply <- function(otu, fun) {
+  applied <- as.data.frame(apply(otu, 2, fun))
+  rownames(applied) <- rownames(otu)
   return(applied)
 }
 
@@ -33,7 +31,7 @@ f.transform.sample <- function(n) {
     return(f)
 }
 
-f.transform.table <- function(frame) dfapply(frame, f.transform.sample)
+f.transform.table <- function(otu) dfapply(otu, f.transform.sample)
 
 ppplot <- function(n, n.points=10) {
     # convenience function for plotting

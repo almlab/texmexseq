@@ -34,7 +34,7 @@ the old rownames.
 only they return theoretical cumulative distribution function values.
 
 The resulting tables could be used on their own for analysis, but \code{texmexseq} is
-designed to slice that data into smaller ``quads'' (using \link{\code{quad.table}}).
+designed to slice that data into smaller ``quads'' (using \code{\link{quad.table}}).
 }
 
 \value{
@@ -49,7 +49,7 @@ designed to slice that data into smaller ``quads'' (using \link{\code{quad.table
 
 \examples{
 # make up a table of data
-sim.data <- function() rpoilog(100, 1.0, 1.0)
+sim.data <- function() rpoilog(100, 1.0, 1.0, condS=TRUE)
 sample1 <- sim.data()
 
 # transform it
@@ -63,7 +63,7 @@ rownames(otu.table) <- otu.ids
 
 # make a new table from those fitted values
 f.table <- f.transform.table(otu.table)
-hist(f.table\$sample1)
+hist(f.table$sample1)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}

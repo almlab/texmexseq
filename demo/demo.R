@@ -2,7 +2,8 @@
 otu.table.filename <- system.file('demo', 'otus.dat', package='texmexseq')
 
 # first, load up an OTU table of raw counts
-otu.table <- ReadOtuTable(otu.table.filename)
+# "row.names=1" makes the first column (the OTU IDs) become the row names
+otu.table <- read.table(otu.table.filename, header=T, row.names=1)
 
 # you can evaluate how good the texmex fit will be for any particular sample by making
 # a PP plot. (it's a ggplot object, so you can add layers and manipulate the

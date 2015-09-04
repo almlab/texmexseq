@@ -1,5 +1,5 @@
 \name{texmex.fit}
-\alias{texmext.fit}
+\alias{texmex.fit}
 
 \title{wrapper for fitting the Poisson lognormal}
 \description{
