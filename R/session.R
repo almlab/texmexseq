@@ -62,7 +62,7 @@ ppplot <- function(n, n.points=10) {
     return(p)
 }
 
-plot.quad <- function(quad) {
+quad.plot <- function(quad) {
   expected.cols <- c('d.control', 'd.treatment')
     if (!all(expected.cols %in% names(quad))) {
         stop("input a data frame of with d.control and d.treatment")

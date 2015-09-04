@@ -9,5 +9,6 @@ Description: Analysis and visualization of community dynamics in microbial
              ecology experiments (that use sequence count data) using the
              truncated Poisson lognormal distribution.
 License: GPL-3
+Depends: dplyr (>= 0.4.2), ggplot2 (>= 1.0.1)
 URL: http://almlab.mit.edu/texmex.html
 NeedsCompilation: yes
