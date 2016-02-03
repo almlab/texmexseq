@@ -7,17 +7,16 @@
 }
 
 \usage{
-  poilogMLE(n, nboot=0, trunc=TRUE, method='L-BFGS-B', start.mu=-1.0, start.sig=1.0,
+  poilogMLE(n, start.mu, start.sig, trunc=TRUE, method='L-BFGS-B',
   control=list(fnscale=length(n)), ...)
 }
 
 \arguments{
   \item{n}{vector of observed counts}
-  \item{nboot}{number of bootstrapping iterations}
-  \item{trunc}{remove weight from zero counts?}
-  \item{method}{optimization method for \code{optim}}
   \item{start.mu}{initial estimate for the lognormal mean}
   \item{start.sig}{initial estimate for the lognormal standard deviation}
+  \item{trunc}{remove weight from zero counts?}
+  \item{method}{optimization method for \code{optim}}
   \item{control}{list of parameters for \code{optim}}
   \item{...}{further parameters to go to \code{optim}}
 }
@@ -37,19 +36,12 @@ Truncation should only be turned off if all the known OTUs of the sequenced
 community are known. In most cases, this is not applicable, since it is usually
 not possible to know if an OTU had zero counts because it is not present in
 the environment or if it is present but in low abundance.
-
-Parametric bootstrapping simulate new sets of observations using the estimated
-parameters (see \code{rbipoilog}).
 }
 
 \value{
     \item{par}{Maximum likelihood estimates of the parameters}
     \item{p}{Approximate fraction of OTUs revealed by the sample}
     \item{logLval}{Log likelihood of the data given the estimated parameters}
-    \item{gof}{Godness of fit measure obtained by checking the rank of
-        \code{logLval} against \code{logLval}'s obtained during the bootstrap
-        procedure, (gof<0.05) or (gof>0.95) indicates lack of fit}
-    \item{boot}{A data frame containing the bootstrap replicates of parameters and \code{logLval}}
 }
 
 \seealso{
@@ -62,10 +54,10 @@ parameters (see \code{rbipoilog}).
 x <- rpoilog(S=1000, mu=-2.0, sig=2.0, keep0=FALSE)
 
 # fit that data
-res <- poilogMLE(x)
+res <- poilogMLE(x, 2.0, -2.0)
 
 # the results should be fairly robust to the starting parameters
-res2 <- poilogMLE(x, start.mu=2.0, start.sig=0.5)
+res2 <- poilogMLE(x, 1.0, 0.5)
 }
 
 \author{Scott Olesen \email{swo@mit.edu}}

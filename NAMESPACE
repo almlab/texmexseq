@@ -1,3 +1,5 @@
 useDynLib(texmexseq)
-export(dpoilog,rpoilog,poilogMLE,Sample,SampleFit,SamplePair,SampleQuad,ReadOtuTable,Experiment,
-  PlotFitPP,PlotPair,PlotQuad,ExtractQuadData)
+import(ggplot2, dplyr)
+export(dpoilog, rpoilog, poilogMLE, texmex.fit, z.transform.sample,
+  z.transform.table, f.transform.sample, f.transform.table, ppplot, quad.plot,
+  quad.table)
