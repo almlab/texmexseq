@@ -1,8 +1,7 @@
 context("Table manipulation")
 
 test_that("quad.table pulls out the right columns", {
-  otu.table.filename <- file.path('..', '..', 'inst', 'extdata', 'otus.dat')
-  otu.table <- read.table(otu.table.filename, header=T, row.names=1)
+  otu.table <- read.table('otus.dat', header=T, row.names=1)
 
   f.table <- f.transform.table(otu.table)
   f.quad <- quad.table(f.table, 'inoculum1.control.before', 'inoculum1.control.after', 'inoculum1.treatment.before', 'inoculum1.treatment.after')
