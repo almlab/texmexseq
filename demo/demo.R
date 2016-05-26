@@ -1,5 +1,5 @@
 # these are some commands that tell this demo where to find the demo data
-otu.table.filename <- system.file('demo', 'otus.dat', package='texmexseq')
+otu.table.filename <- system.file('inst', 'extdata', 'otus.dat', package='texmexseq')
 
 # first, load up an OTU table of raw counts
 # "row.names=1" makes the first column (the OTU IDs) become the row names
