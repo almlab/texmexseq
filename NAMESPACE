@@ -1,5 +1,7 @@
 useDynLib(texmexseq)
-import(ggplot2, dplyr)
+import(ggplot2, dplyr, testthat)
+importFrom("stats", "optim", "rpois", "rnorm")
+importFrom("utils", "read.table")
 export(dpoilog, rpoilog, poilogMLE, texmex.fit, z.transform.sample,
   z.transform.table, f.transform.sample, f.transform.table, ppplot, quad.plot,
   quad.table)

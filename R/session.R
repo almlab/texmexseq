@@ -50,7 +50,7 @@ ppplot <- function(n, n.points=10) {
     pp.data <- data.frame(empirical=ecdf.table, theoretical=f.table)
 
     perfect.fit <- data.frame(empirical=c(0, 1), theoretical=c(0, 1))
-    p <- ggplot(pp.data, aes(x=empirical, y=theoretical)) +
+    p <- ggplot(pp.data, aes_string(x='empirical', y='theoretical')) +
       geom_point(data=pp.data[1:n.points, ]) +
       geom_line() + 
       geom_line(data=perfect.fit) +
@@ -61,16 +61,16 @@ ppplot <- function(n, n.points=10) {
 }
 
 quad.plot <- function(quad) {
-  expected.cols <- c('d.control', 'd.treatment')
+    expected.cols <- c('d.control', 'd.treatment')
     if (!all(expected.cols %in% names(quad))) {
         stop("input a data frame of with d.control and d.treatment")
     }
-  
-  # make this a square plot: 0 in the middle, equal axes up and down
-  # get the finite number in the table whose absolute value
-  lim <- select(quad, d.control, d.treatment) %>% apply(2, function(x) max(abs(Filter(is.finite, x)))) %>% max
+    
+    # make this a square plot: 0 in the middle, equal axes up and down
+    # get the finite number in the table whose absolute value
+    lim <- select(quad, get('d.control'), get('d.treatment')) %>% apply(2, function(x) max(abs(Filter(is.finite, x)))) %>% max
 
-    p <- ggplot(quad, aes(x=d.control, y=d.treatment)) +
+    p <- ggplot(quad, aes_string(x='d.control', y='d.treatment')) +
       geom_point() + 
       coord_fixed() +
       xlim(-lim, lim) + ylim(-lim, lim) +
